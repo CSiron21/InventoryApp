@@ -1,0 +1,167 @@
+.suppliers-page {
+  flex: 1;
+  padding: 20px;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+}
+
+.suppliers-header {
+  margin-bottom: 20px;
+}
+
+.suppliers-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.suppliers-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  position: relative;
+  width: 300px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+.add-supplier-btn {
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-supplier-btn:hover {
+  background-color: #555;
+}
+
+.suppliers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.supplier-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.supplier-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.supplier-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.logo-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+}
+
+.logo-1 {
+  background-color: #f0f8ff;
+  color: #0066cc;
+}
+
+.logo-2 {
+  background-color: #fff0f0;
+  color: #cc0000;
+}
+
+.logo-3 {
+  background-color: #fffaf0;
+  color: #ff6600;
+}
+
+.logo-4 {
+  background-color: #f0fff0;
+  color: #006600;
+}
+
+.logo-5 {
+  background-color: #f0f0ff;
+  color: #6600cc;
+}
+
+.supplier-info {
+  padding: 15px;
+  border-top: 1px solid #eee;
+}
+
+.supplier-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.supplier-contact {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.supplier-email {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #0066cc;
+  margin-bottom: 15px;
+}
+
+.email-icon {
+  margin-right: 5px;
+}
+
+.supplier-orders {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.order-count {
+  font-weight: 600;
+  color: #333;
+}
