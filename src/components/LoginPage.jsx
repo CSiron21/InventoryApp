@@ -111,13 +111,6 @@ const LoginPage = () => {
                 />
               </div>
 
-              <div className="form-options">
-                <label className="remember-me">
-                  <input type="checkbox" />
-                  <span>Remember me</span>
-                </label>
-                <a href="#" className="forgot-password">Forgot Password?</a>
-              </div>
 
               <button type="submit" className="login-button" disabled={loading}>
                 {loading ? 'Signing In...' : 'Sign In'}

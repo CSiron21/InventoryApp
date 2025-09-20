@@ -1,36 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/DashboardPage.css';
+import supabase from '../supabaseClient';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardPage = () => {
-  // Mock data for dashboard
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [inv, setInv] = useState(null);
+  const [sales, setSales] = useState(null);
+  const [pchs, setPchs] = useState(null);
+  const [activity, setActivity] = useState([]);
+  const navigate = useNavigate();
+
+  async function fetchAll() {
+    setLoading(true);
+    setError('');
+    const [invRes, salesRes, pchsRes, actRes] = await Promise.all([
+      supabase.from('v_inventory_summary').select('*').single(),
+      supabase.from('v_sales_summary').select('*').single(),
+      supabase.from('v_purchase_summary').select('*').single(),
+      supabase.from('v_recent_activity').select('*').order('created_at', { ascending: false }).limit(20),
+    ]);
+
+    if (invRes.error || salesRes.error || pchsRes.error || actRes.error) {
+      setError(invRes.error?.message || salesRes.error?.message || pchsRes.error?.message || actRes.error?.message || 'Failed to load dashboard');
+    } else {
+      setInv(invRes.data || null);
+      setSales(salesRes.data || null);
+      setPchs(pchsRes.data || null);
+      setActivity(actRes.data || []);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => { fetchAll(); }, []);
+
   const inventorySummary = {
-    totalItems: 248,
-    lowStock: 15,
-    outOfStock: 3,
-    recentlyAdded: 12
+    // QUESTION: Should this show sum of quantities (inv.total_units) or number of distinct products (inv.product_count)?
+    totalItems: inv?.total_units ?? 0,
+    lowStock: inv?.low_stock_count ?? 0,
+    outOfStock: inv?.out_of_stock_count ?? 0,
+    recentlyAdded: inv?.recently_added_count ?? 0,
   };
 
   const salesSummary = {
-    totalOrders: 87,
-    pendingOrders: 14,
-    completedOrders: 73,
-    revenue: '$42,580'
+    totalOrders: sales?.total_orders ?? 0,
+    pendingOrders: sales?.pending_orders ?? 0,
+    completedOrders: sales?.completed_orders ?? 0,
+    revenue: sales ? `$${Number(sales.revenue || 0).toLocaleString()}` : '$0',
   };
 
   const purchaseSummary = {
-    totalOrders: 54,
-    pendingOrders: 8,
-    completedOrders: 46,
-    spent: '$31,250'
+    totalOrders: pchs?.total_orders ?? 0,
+    pendingOrders: pchs?.pending_orders ?? 0,
+    completedOrders: pchs?.completed_orders ?? 0,
+    spent: pchs ? `$${Number(pchs.total_spent || 0).toLocaleString()}` : '$0',
   };
-
-  const recentActivity = [
-    { id: 1, type: 'sale', item: 'Solar Panel 250W', quantity: 5, date: '2 hours ago', customer: 'Green Energy Co.' },
-    { id: 2, type: 'purchase', item: 'Inverter 5kW', quantity: 10, date: '5 hours ago', supplier: 'BrightSky Electronics' },
-    { id: 3, type: 'inventory', item: 'Battery 12V', quantity: 20, date: '1 day ago', action: 'added' },
-    { id: 4, type: 'sale', item: 'Mounting Kit', quantity: 8, date: '1 day ago', customer: 'SunPower Homes' },
-    { id: 5, type: 'inventory', item: 'Solar Panel 300W', quantity: 3, date: '2 days ago', action: 'low stock alert' }
-  ];
 
   return (
     <div className="dashboard-page">
@@ -40,6 +65,13 @@ const DashboardPage = () => {
           {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </div>
       </div>
+
+      {error && (
+        <div style={{ background: '#fee', color: '#c33', padding: 10, border: '1px solid #fcc', borderRadius: 6, marginBottom: 16 }}>
+          {error}
+        </div>
+      )}
+      {loading && <div>Loading...</div>}
 
       <div className="summary-cards">
         <div className="summary-card inventory-card">
@@ -66,7 +98,7 @@ const DashboardPage = () => {
             </div>
           </div>
           <div className="card-footer">
-            <button className="view-details-btn">View Inventory</button>
+            <button className="view-details-btn" onClick={() => navigate('/inventory')}>View Inventory</button>
           </div>
         </div>
 
@@ -94,7 +126,7 @@ const DashboardPage = () => {
             </div>
           </div>
           <div className="card-footer">
-            <button className="view-details-btn">View Sales Orders</button>
+            <button className="view-details-btn" onClick={() => navigate('/sales-orders')}>View Sales Orders</button>
           </div>
         </div>
 
@@ -122,7 +154,7 @@ const DashboardPage = () => {
             </div>
           </div>
           <div className="card-footer">
-            <button className="view-details-btn">View Purchase Orders</button>
+            <button className="view-details-btn" onClick={() => navigate('/purchase-orders')}>View Purchase Orders</button>
           </div>
         </div>
       </div>
@@ -130,33 +162,24 @@ const DashboardPage = () => {
       <div className="recent-activity-section">
         <div className="section-header">
           <h2>Recent Activity</h2>
-          <button className="view-all-btn">View All</button>
+          <button className="view-all-btn" onClick={fetchAll}>Refresh</button>
         </div>
         <div className="activity-list">
-          {recentActivity.map(activity => (
-            <div key={activity.id} className={`activity-item ${activity.type}-activity`}>
+          {activity.map((a, idx) => (
+            <div key={`${a.event_type}-${a.ref_id}-${idx}`} className={`activity-item ${a.event_type}`}>
               <div className="activity-icon">
-                {activity.type === 'sale' ? '🛒' : activity.type === 'purchase' ? '📋' : '📦'}
+                {a.event_type === 'sold_product' ? '🛒' : a.event_type === 'purchased_product' ? '📋' : a.event_type === 'added_product' ? '➕' : a.event_type === 'low_stock' ? '⚠️' : 'ℹ️'}
               </div>
               <div className="activity-details">
-                <div className="activity-title">
-                  {activity.type === 'sale' 
-                    ? `Sold ${activity.quantity} ${activity.item}` 
-                    : activity.type === 'purchase' 
-                      ? `Purchased ${activity.quantity} ${activity.item}` 
-                      : `${activity.action.charAt(0).toUpperCase() + activity.action.slice(1)} ${activity.quantity} ${activity.item}`}
-                </div>
+                <div className="activity-title">{a.title}</div>
                 <div className="activity-meta">
-                  {activity.type === 'sale' 
-                    ? `To: ${activity.customer}` 
-                    : activity.type === 'purchase' 
-                      ? `From: ${activity.supplier}` 
-                      : ''}
-                  <span className="activity-date">{activity.date}</span>
+                  <span>{a.details}</span>
+                  <span className="activity-date" style={{ marginLeft: 8 }}>{new Date(a.created_at).toLocaleString()}</span>
                 </div>
               </div>
             </div>
           ))}
+          {!activity.length && !loading && <div>No recent activity</div>}
         </div>
       </div>
     </div>

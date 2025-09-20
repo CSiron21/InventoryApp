@@ -106,6 +106,14 @@
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.3s ease;
+  background-color: #fff;
+  box-sizing: border-box;
+  display: block;
+}
+
+/* Ensure password text renders in black for readability */
+.form-group input[type="password"] {
+  color: #000;
 }
 
 .form-group input:focus {
@@ -194,6 +202,14 @@
   margin-bottom: 20px;
   border: 1px solid #fcc;
   font-size: 14px;
+}
+
+/* Ensure autofill fields keep white background and readable text */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #333 !important;
 }
 
 .forgot-password {

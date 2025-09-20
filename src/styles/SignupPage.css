@@ -112,6 +112,14 @@
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.3s ease;
+  background-color: #fff;
+  box-sizing: border-box;
+  display: block;
+}
+
+/* Ensure password text renders in black for readability */
+.form-group input[type="password"] {
+  color: #000;
 }
 
 .form-group input:focus {

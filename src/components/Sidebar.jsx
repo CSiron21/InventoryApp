@@ -18,7 +18,6 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, user, profile }) => {
         <div className="sidebar-brand">
           <span className="sun-icon">☀️</span>
           <h2 className="sidebar-title">SunFlow Inventory</h2>
-          <span className="settings-icon">⚙️</span>
         </div>
       </div>
 

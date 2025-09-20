@@ -222,13 +222,6 @@ const SignupPage = () => {
                 />
               </div>
 
-              <div className="form-options">
-                <label className="terms-agreement">
-                  <input type="checkbox" required />
-                  <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
-                </label>
-              </div>
-
               <button type="submit" className="signup-button" disabled={loading}>
                 {loading ? 'Creating Account...' : 'Create Account'}
               </button>
